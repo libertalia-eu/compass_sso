@@ -1,0 +1,10 @@
+[project]
+name = "compass_sso"
+version = "0.0.1"
+description = "Spike: end the Keycloak session on Frappe logout and follow Keycloak session end"
+requires-python = ">=3.10"
+dependencies = []
+
+[build-system]
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"
