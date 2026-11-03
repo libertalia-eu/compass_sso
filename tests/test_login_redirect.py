@@ -6,7 +6,7 @@ from compass_sso.login_redirect import goes_to_keycloak
 
 class GoesToKeycloakTest(unittest.TestCase):
 	def test_guest_opening_the_login_page_or_the_app(self):
-		for path in ("/login", "/crm", "/crm/leads/view"):
+		for path in ("/login", "/", "/crm", "/crm/leads/view"):
 			self.assertTrue(goes_to_keycloak("GET", path, "Guest", "crm"), path)
 
 	def test_signed_in_user_is_not_redirected(self):
