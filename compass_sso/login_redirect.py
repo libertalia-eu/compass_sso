@@ -2,10 +2,10 @@ LOGIN_PATH = "/login"
 
 
 def goes_to_keycloak(method: str, path: str, user: str, app_route: str) -> bool:
-	"""A guest who opens the login page or the app itself. The app's own page would only show an error (CRM) or redirect with JavaScript."""
+	"""A guest who opens the login page, the site root (the home page is the app) or the app itself. The app's own page would only show an error (CRM) or redirect with JavaScript."""
 	if method != "GET" or user != "Guest":
 		return False
-	return path in (LOGIN_PATH, f"/{app_route}") or path.startswith(f"/{app_route}/")
+	return path in (LOGIN_PATH, "/", f"/{app_route}") or path.startswith(f"/{app_route}/")
 
 
 def redirect_guest_to_keycloak():
