@@ -1,6 +1,7 @@
 import time
 
 import frappe
+import requests
 
 from compass_sso import keycloak, store
 
@@ -8,7 +9,7 @@ CHECK_INTERVAL_SECONDS = 30
 
 
 def check_keycloak_session():
-	"""before_request: while the Keycloak session lives, its refresh token can be renewed; once it ended, so does Frappe's."""
+	"""before_request: while the Keycloak session lives, its refresh token can be renewed; once it ended or cannot be confirmed, so does Frappe's."""
 	if frappe.session.user == "Guest":
 		return
 	remembered = store.recall(frappe.session.sid)
@@ -16,7 +17,8 @@ def check_keycloak_session():
 		return
 	try:
 		tokens = keycloak.refresh(remembered["refresh_token"])
-	except keycloak.KeycloakSessionEnded:
+	except (keycloak.KeycloakSessionEnded, requests.RequestException):
+		# Keycloak unreachable counts as ended (fails closed): the Keycloak session cannot be confirmed, so Frappe's ends too.
 		store.forget(frappe.session.sid)
 		frappe.local.login_manager.logout()
 		frappe.db.commit()
