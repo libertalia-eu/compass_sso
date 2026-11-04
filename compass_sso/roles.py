@@ -43,3 +43,5 @@ def sync_admin_role(user: str, claims: dict) -> None:
 		account.add_roles(role)
 	else:
 		account.remove_roles(role)
+	# the callback is a GET request, for which Frappe does not commit by itself (login_oauth_user commits before this runs)
+	frappe.db.commit()
