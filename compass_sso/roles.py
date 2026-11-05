@@ -29,19 +29,33 @@ def admin_role_change(client_id: str, keycloak_roles: list[str], frappe_roles: l
 	return None
 
 
+def keycloak_roles_by_app(claims: dict) -> dict:
+	"""The Keycloak client roles of each app from the claims of the sign-in: {client id: roles}.
+
+	A site with several apps signs in through one client, and the roles of every app are in `resource_access`
+	(Keycloak's own shape). An app without an entry there has none of its roles. Without `resource_access`, the
+	older shape applies: the client of the sign-in (`azp`) and its roles in the claim `roles`."""
+	resource_access = claims.get("resource_access")
+	if isinstance(resource_access, dict):
+		return {app: (resource_access.get(app) or {}).get("roles", []) for app in ADMIN_ROLES}
+	return {claims.get("azp"): claims.get("roles")}
+
+
 def sync_admin_role(user: str, claims: dict) -> None:
-	"""Give or take away the admin role of the app for `user`, as the claims of the sign-in say. Other roles stay as they are."""
+	"""Give or take away the admin roles of the apps for `user`, as the claims of the sign-in say. Other roles stay as they are."""
 	import frappe
 
-	change = admin_role_change(claims.get("azp"), claims.get("roles"), frappe.get_roles(user))
-	if change is None:
+	frappe_roles = frappe.get_roles(user)
+	changes = [admin_role_change(app, roles, frappe_roles) for app, roles in keycloak_roles_by_app(claims).items()]
+	changes = [change for change in changes if change]
+	if not changes:
 		return
-	action, role = change
 	account = frappe.get_doc("User", user)
 	account.flags.ignore_permissions = True
-	if action == GRANT:
-		account.add_roles(role)
-	else:
-		account.remove_roles(role)
+	for action, role in changes:
+		if action == GRANT:
+			account.add_roles(role)
+		else:
+			account.remove_roles(role)
 	# the callback is a GET request, for which Frappe does not commit by itself (login_oauth_user commits before this runs)
 	frappe.db.commit()
