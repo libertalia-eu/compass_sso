@@ -14,14 +14,15 @@ document.addEventListener(
 		}
 		localStorage.current_app = logo.getAttribute("app-name");
 		localStorage.current_route = logo.getAttribute("app-route");
-		frappe.call({
-			method: "frappe.apps.get_incomplete_setup_route",
-			args: { current_app: localStorage.current_app, app_route: localStorage.current_route },
-			callback: (r) => {
-				target.location.href = r.message;
-			},
-			error: () => target.close(), // shortcut: also closes a reused window, when the call fails
-		});
+		// GET needs no CSRF token: the token of this tab goes stale as soon as another tab of the site signs in or boots.
+		const query = new URLSearchParams({ current_app: localStorage.current_app, app_route: localStorage.current_route });
+		fetch(`/api/method/frappe.apps.get_incomplete_setup_route?${query}`, { credentials: "same-origin" })
+			.then((response) => (response.ok ? response.json() : Promise.reject(response)))
+			.then((body) => body.message)
+			.catch(() => localStorage.current_route) // shortcut: skips the setup wizard redirect when the call fails, upgrade when an app needs it
+			.then((route) => {
+				target.location.href = route;
+			});
 	},
 	true
 );
