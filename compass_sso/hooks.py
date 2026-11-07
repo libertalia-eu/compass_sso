@@ -17,3 +17,6 @@ before_request = [
 
 # Nextcloud is no Frappe app, so it enters the app overview and the apps menus of Helpdesk and CRM through this app.
 add_to_apps_screen = nextcloud_entry(os.environ.get("COMPASS_NEXTCLOUD_URL"))
+
+# The app overview opens the apps in a new window (REQ-039).
+web_include_js = "/assets/compass_sso/js/apps_screen.js"
