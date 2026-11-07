@@ -10,6 +10,11 @@ class AdminRoleChangeTest(unittest.TestCase):
 		self.assertEqual(admin_role_change("helpdesk", ["Helpdesk Admin"], []), (GRANT, "Agent Manager"))
 		self.assertEqual(admin_role_change("raven", ["Raven Admin"], []), (GRANT, "Raven Admin"))
 
+	def test_nextcloud_role_follows_the_keycloak_role(self):
+		self.assertEqual(admin_role_change("nextcloud", ["Nextcloud Nutzer", "admin"], ["Sales Manager"]), (GRANT, "Nextcloud Nutzer"))
+		self.assertEqual(admin_role_change("nextcloud", [], ["Nextcloud Nutzer"]), (REVOKE, "Nextcloud Nutzer"))
+		self.assertIsNone(admin_role_change("nextcloud", ["Nextcloud Nutzer"], ["Nextcloud Nutzer"]))
+
 	def test_user_without_the_admin_role_does_not_get_it(self):
 		self.assertIsNone(admin_role_change("crm", ["CRM Nutzer"], ["Sales User"]))
 
@@ -35,7 +40,7 @@ class AdminRoleChangeTest(unittest.TestCase):
 class KeycloakRolesByAppTest(unittest.TestCase):
 	def test_one_client_carries_the_roles_of_every_app(self):
 		claims = {"azp": "frappe", "resource_access": {"crm": {"roles": ["CRM Admin"]}, "raven": {"roles": ["Raven Nutzer"]}, "other": {"roles": ["x"]}}}
-		self.assertEqual(keycloak_roles_by_app(claims), {"crm": ["CRM Admin"], "helpdesk": [], "raven": ["Raven Nutzer"]})
+		self.assertEqual(keycloak_roles_by_app(claims), {"crm": ["CRM Admin"], "helpdesk": [], "raven": ["Raven Nutzer"], "nextcloud": []})
 
 	def test_the_older_shape_names_the_client_of_the_sign_in(self):
 		self.assertEqual(keycloak_roles_by_app({"azp": "crm", "roles": ["CRM Admin"]}), {"crm": ["CRM Admin"]})
