@@ -1,4 +1,4 @@
-"""The admin role of a Frappe app follows a role in Keycloak (COMPASS REQ-023)."""
+"""The admin role of a Frappe app and the access to Nextcloud follow a role in Keycloak (COMPASS REQ-023, REQ-045)."""
 
 # One entry per app, keyed by the Keycloak client id: the Keycloak client role and the Frappe role it stands for. This table
 # is the only way a Keycloak role becomes a Frappe role: it never names System Manager or Script Manager.
@@ -6,6 +6,8 @@ ADMIN_ROLES = {
 	"crm": ("CRM Admin", "Sales Manager"),
 	"helpdesk": ("Helpdesk Admin", "Agent Manager"),
 	"raven": ("Raven Admin", "Raven Admin"),
+	# Nextcloud is no Frappe app: the role only tells the apps menu that the user may open it (`apps_screen.has_nextcloud_access`).
+	"nextcloud": ("Nextcloud Nutzer", "Nextcloud Nutzer"),
 }
 
 GRANT = "grant"
@@ -41,6 +43,14 @@ def keycloak_roles_by_app(claims: dict) -> dict:
 	return {claims.get("azp"): claims.get("roles")}
 
 
+def ensure_role(name: str) -> None:
+	"""Create the Frappe role when it is missing (the roles of the apps exist, the one for Nextcloud does not). It gives no access to Desk."""
+	import frappe
+
+	if not frappe.db.exists("Role", name):
+		frappe.get_doc(doctype="Role", role_name=name, desk_access=0).insert(ignore_permissions=True)
+
+
 def sync_admin_role(user: str, claims: dict) -> None:
 	"""Give or take away the admin roles of the apps for `user`, as the claims of the sign-in say. Other roles stay as they are."""
 	import frappe
@@ -54,6 +64,7 @@ def sync_admin_role(user: str, claims: dict) -> None:
 	account.flags.ignore_permissions = True
 	for action, role in changes:
 		if action == GRANT:
+			ensure_role(role)
 			account.add_roles(role)
 		else:
 			account.remove_roles(role)

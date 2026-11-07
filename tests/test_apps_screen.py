@@ -8,7 +8,7 @@ class NextcloudEntryTest(unittest.TestCase):
 	def test_url_gives_one_entry_with_logo_and_route(self):
 		self.assertEqual(
 			nextcloud_entry("https://cloud.example.org"),
-			[{"name": "nextcloud", "logo": "https://cloud.example.org/apps/theming/icon", "title": "Nextcloud", "route": "https://cloud.example.org"}],
+			[{"name": "nextcloud", "logo": "https://cloud.example.org/apps/theming/icon", "title": "Nextcloud", "route": "https://cloud.example.org", "has_permission": "compass_sso.apps_screen.has_nextcloud_access"}],
 		)
 
 	def test_trailing_slash_and_spaces_are_dropped(self):
