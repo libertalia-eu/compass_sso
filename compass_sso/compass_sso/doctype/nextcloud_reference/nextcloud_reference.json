@@ -1,0 +1,29 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2026-11-07 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": ["title", "subline", "url", "thumbnail"],
+ "fields": [
+  {"fieldname": "title", "fieldtype": "Data", "in_list_view": 1, "in_preview": 1, "label": "Title", "reqd": 1},
+  {"fieldname": "subline", "fieldtype": "Data", "in_preview": 1, "label": "Subline"},
+  {"fieldname": "url", "fieldtype": "Data", "label": "Link", "options": "URL", "reqd": 1, "unique": 1},
+  {"fieldname": "thumbnail", "fieldtype": "Data", "label": "Thumbnail", "options": "URL"}
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-11-07 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Compass SSO",
+ "name": "Nextcloud Reference",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "read": 1, "role": "Raven User", "share": 0, "write": 0},
+  {"create": 1, "read": 1, "role": "System Manager"}
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "title"
+}
