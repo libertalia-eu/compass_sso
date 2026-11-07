@@ -16,5 +16,5 @@ def keycloak_login(code: str, state: str):
 	claims = jwt.decode(tokens["id_token"], options={"verify_signature": False})
 	login_oauth_user(claims, provider=keycloak.PROVIDER, state=state)
 	if frappe.session.user != "Guest":
-		roles.sync_admin_role(frappe.session.user, claims)
+		roles.sync_roles(frappe.session.user, claims)
 		store.remember(frappe.session.sid, claims["sid"], tokens["refresh_token"], time.time())
