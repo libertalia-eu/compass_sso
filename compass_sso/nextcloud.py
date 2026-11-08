@@ -21,6 +21,10 @@ class NextcloudUnavailable(frappe.ValidationError):
 	"""Nextcloud is unreachable, refuses the token, or is not configured for this site."""
 
 
+class NextcloudSessionEnded(frappe.ValidationError):
+	"""The user's Keycloak sign-in is gone (no stored token, or Keycloak refused it): only a new sign-in helps. The picker shows its own text for this type."""
+
+
 def base_url() -> str:
 	url = (os.environ.get("COMPASS_NEXTCLOUD_URL") or "").rstrip("/")
 	if not url:
@@ -67,11 +71,13 @@ def is_resolved(references: dict, url: str) -> bool:
 def _access_token() -> str:
 	remembered = store.recall(frappe.session.sid)
 	if not remembered:
-		raise NextcloudUnavailable("The Keycloak session has ended. Sign in again.")
+		raise NextcloudSessionEnded("The Keycloak session has ended. Sign in again.")
 	try:
 		tokens = keycloak.refresh(remembered["refresh_token"])
-	except (keycloak.KeycloakSessionEnded, requests.RequestException):
-		raise NextcloudUnavailable("The Keycloak session has ended. Sign in again.") from None
+	except keycloak.KeycloakSessionEnded:
+		raise NextcloudSessionEnded("The Keycloak session has ended. Sign in again.") from None
+	except requests.RequestException:
+		raise NextcloudUnavailable("Keycloak is not reachable.") from None
 	store.remember(frappe.session.sid, remembered["keycloak_sid"], tokens["refresh_token"], remembered["checked_at"])
 	return tokens["access_token"]
 
@@ -141,7 +147,7 @@ def reference_has_permission(doc, ptype=None, user=None, **kwargs) -> bool:
 	if allowed is None:
 		try:
 			allowed = is_resolved(_resolve(doc.url), doc.url)
-		except NextcloudUnavailable:
+		except (NextcloudUnavailable, NextcloudSessionEnded):
 			return False
 		frappe.cache.set_value(cache_key, allowed, expires_in_sec=ACCESS_CACHE_SECONDS)
 	return allowed

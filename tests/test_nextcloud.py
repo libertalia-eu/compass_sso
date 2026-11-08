@@ -48,3 +48,42 @@ class IsResolvedTest(unittest.TestCase):
 	def test_no_reference_is_not(self):
 		self.assertFalse(is_resolved({BASE + "/f/1": None}, BASE + "/f/1"))
 		self.assertFalse(is_resolved({}, BASE + "/f/1"))
+
+
+class AccessTokenTest(unittest.TestCase):
+	"""The text the picker shows depends on which error type the token step raises."""
+
+	def call_with(self, recall=None, refresh_error=None):
+		from unittest.mock import MagicMock, patch
+
+		from compass_sso import nextcloud
+
+		with patch.object(nextcloud, "frappe", MagicMock()), patch.object(nextcloud.store, "recall", return_value=recall), patch.object(
+			nextcloud.keycloak, "refresh", side_effect=refresh_error, return_value={"access_token": "t", "refresh_token": "r"}
+		), patch.object(nextcloud.store, "remember"):
+			return nextcloud._access_token()
+
+	def test_a_session_without_a_stored_token_is_an_ended_session(self):
+		from compass_sso.nextcloud import NextcloudSessionEnded
+
+		with self.assertRaises(NextcloudSessionEnded):
+			self.call_with(recall=None)
+
+	def test_a_refused_refresh_token_is_an_ended_session(self):
+		from compass_sso import keycloak
+		from compass_sso.nextcloud import NextcloudSessionEnded
+
+		with self.assertRaises(NextcloudSessionEnded):
+			self.call_with(recall={"refresh_token": "x", "keycloak_sid": "k", "checked_at": 0}, refresh_error=keycloak.KeycloakSessionEnded)
+
+	def test_keycloak_down_is_not_an_ended_session(self):
+		import requests
+
+		from compass_sso.nextcloud import NextcloudSessionEnded, NextcloudUnavailable
+
+		with self.assertRaises(NextcloudUnavailable) as caught:
+			self.call_with(recall={"refresh_token": "x", "keycloak_sid": "k", "checked_at": 0}, refresh_error=requests.ConnectionError)
+		self.assertNotIsInstance(caught.exception, NextcloudSessionEnded)
+
+	def test_a_good_token_is_returned(self):
+		self.assertEqual(self.call_with(recall={"refresh_token": "x", "keycloak_sid": "k", "checked_at": 0}), "t")
