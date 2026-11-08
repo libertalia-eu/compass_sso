@@ -108,6 +108,9 @@ def providers() -> list[dict]:
 
 @frappe.whitelist(methods=["GET"])
 def search(provider: str, term: str = "", cursor: str | None = None) -> dict:
+	# Nextcloud answers a search without a term with 400 ("no valid filters"), so there is nothing to ask for.
+	if not term.strip():
+		return parse_entries({})
 	if provider not in {entry["id"] for entry in providers()}:
 		raise frappe.DoesNotExistError("Unknown Nextcloud search provider.")
 	params = {"term": term, "format": "json"} | ({"cursor": cursor} if cursor else {})

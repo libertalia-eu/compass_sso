@@ -87,3 +87,25 @@ class AccessTokenTest(unittest.TestCase):
 
 	def test_a_good_token_is_returned(self):
 		self.assertEqual(self.call_with(recall={"refresh_token": "x", "keycloak_sid": "k", "checked_at": 0}), "t")
+
+
+class SearchWithoutTermTest(unittest.TestCase):
+	"""Nextcloud refuses a search without a term, so the search must not reach it."""
+
+	def search(self, term):
+		from unittest.mock import MagicMock, patch
+
+		from compass_sso import nextcloud
+
+		with patch.object(nextcloud, "_get", MagicMock()) as get, patch.object(nextcloud, "providers", MagicMock(return_value=[{"id": "files"}])):
+			return getattr(nextcloud.search, "__wrapped__", nextcloud.search)("files", term), get
+
+	def test_an_empty_or_blank_term_gives_no_entries_and_asks_nobody(self):
+		for term in ("", "   "):
+			result, get = self.search(term)
+			self.assertEqual(result, {"entries": [], "cursor": None})
+			get.assert_not_called()
+
+	def test_a_term_still_asks_nextcloud(self):
+		result, get = self.search("Readme")
+		get.assert_called_once()
