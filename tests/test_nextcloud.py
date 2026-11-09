@@ -13,6 +13,10 @@ class VisibleProvidersTest(unittest.TestCase):
 			visible_providers(providers), [{"id": "files", "name": "Files"}, {"id": "search-deck-card-board", "name": "Deck"}]
 		)
 
+	def test_apps_without_a_reference_provider_are_hidden(self):
+		providers = [{"id": "files"}, {"id": "circles"}, {"id": "systemtags"}, {"id": "contacts"}]
+		self.assertEqual(visible_providers(providers), [{"id": "files", "name": "files"}])
+
 	def test_a_provider_without_name_shows_its_id(self):
 		self.assertEqual(visible_providers([{"id": "notes"}]), [{"id": "notes", "name": "notes"}])
 
