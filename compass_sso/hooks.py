@@ -18,9 +18,6 @@ before_request = [
 # Desk and Nextcloud enter the apps menus of Helpdesk and CRM through this app: Frappe 16 skips its own entry, and Nextcloud is no Frappe app.
 add_to_apps_screen = desk_entry() + nextcloud_entry(os.environ.get("COMPASS_NEXTCLOUD_URL"))
 
-# The app overview opens the apps in a new window (REQ-039).
-web_include_js = "/assets/compass_sso/js/apps_screen.js"
-
 # A Nextcloud Reference is readable only for a user whom Nextcloud itself lets open the object (REQ-047).
 has_permission = {"Nextcloud Reference": "compass_sso.nextcloud.reference_has_permission"}
 raven_document_link_override = "compass_sso.nextcloud.document_link"

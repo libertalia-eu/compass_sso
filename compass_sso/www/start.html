@@ -1,0 +1,38 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+<div class="compass-apps">
+	<h1>{{ title }}</h1>
+	<div class="compass-apps-list">
+		{% for app in apps %}
+		<a class="compass-app" href="{{ app.route }}" data-window="{{ app.window }}">
+			<img src="{{ app.logo }}" alt="">
+			<span>{{ app.title }}</span>
+		</a>
+		{% endfor %}
+	</div>
+</div>
+<style>
+	.compass-apps-list { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 24px; }
+	.compass-app { display: flex; flex-direction: column; align-items: center; width: 120px; color: inherit; text-decoration: none; }
+	.compass-app img { width: 64px; height: 64px; border-radius: 12px; margin-bottom: 8px; }
+</style>
+{% endblock %}
+
+{% block script %}
+<script>
+	// A named window makes a second click reuse the window; the opener is cut so Nextcloud and the other hosts get no handle on this tab.
+	document.querySelectorAll(".compass-app").forEach((link) => {
+		link.addEventListener("click", (event) => {
+			event.preventDefault();
+			const target = window.open("", link.dataset.window);
+			try {
+				target.opener = null;
+			} catch (e) {
+				// a window of another host was opened with the opener cut already
+			}
+			target.location.href = link.getAttribute("href");
+		});
+	});
+</script>
+{% endblock %}
