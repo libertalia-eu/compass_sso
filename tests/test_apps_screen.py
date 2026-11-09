@@ -1,7 +1,7 @@
 """Unit tests for the Nextcloud entry of the app overview (COMPASS REQ-039). No Frappe needed: python -m unittest."""
 import unittest
 
-from compass_sso.apps_screen import desk_entry, landing_path, nextcloud_entry, window_name
+from compass_sso.apps_screen import desk_entry, nextcloud_entry, window_name
 
 
 class NextcloudEntryTest(unittest.TestCase):
@@ -25,16 +25,6 @@ class DeskEntryTest(unittest.TestCase):
 			desk_entry(),
 			[{"name": "desk", "logo": "/assets/frappe/images/framework.png", "title": "Desk", "route": "/desk", "has_permission": "compass_sso.apps_screen.has_desk_access"}],
 		)
-
-
-class LandingPathTest(unittest.TestCase):
-	def test_the_deprecated_app_switcher_becomes_the_overview(self):
-		self.assertEqual(landing_path("https://team.example.org/apps"), "https://team.example.org/start")
-		self.assertEqual(landing_path("/apps/"), "/start")
-
-	def test_any_other_address_stays(self):
-		for location in ("/crm", "/desk", "https://team.example.org/helpdesk/tickets", "/appstore"):
-			self.assertEqual(landing_path(location), location)
 
 
 class WindowNameTest(unittest.TestCase):
