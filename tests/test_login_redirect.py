@@ -1,7 +1,7 @@
 """Unit tests for the choice which requests go straight to Keycloak (REQ-018). No Frappe needed: python -m unittest."""
 import unittest
 
-from compass_sso.login_redirect import app_routes_of, goes_to_keycloak
+from compass_sso.login_redirect import app_routes_of, goes_to_keycloak, sends_to_overview
 
 
 class GoesToKeycloakTest(unittest.TestCase):
@@ -32,3 +32,15 @@ class GoesToKeycloakTest(unittest.TestCase):
 
 if __name__ == "__main__":
 	unittest.main()
+
+
+class SendsToOverviewTest(unittest.TestCase):
+	def test_a_signed_in_user_on_the_deprecated_app_switcher_goes_to_the_overview(self):
+		for path in ("/apps", "/apps/"):
+			self.assertTrue(sends_to_overview("GET", path, "alice@example.test"), path)
+
+	def test_a_guest_a_post_and_other_paths_stay(self):
+		self.assertFalse(sends_to_overview("GET", "/apps", "Guest"))
+		self.assertFalse(sends_to_overview("POST", "/apps", "alice@example.test"))
+		for path in ("/crm", "/desk", "/appstore", "/apps/x"):
+			self.assertFalse(sends_to_overview("GET", path, "alice@example.test"), path)
