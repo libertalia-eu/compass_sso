@@ -63,9 +63,14 @@ def parse_entries(data: dict) -> dict:
 
 
 def is_resolved(references: dict, url: str) -> bool:
-	"""Nextcloud answers a link the user may not open with a bare object whose name is the link itself; that counts as no access."""
-	rich = (references.get(url) or {}).get("richObject") or {}
-	return bool(rich.get("name")) and rich["name"] != url
+	"""Nextcloud flags a link the user may not open with `accessible: false`; not every app names its object, so the name cannot tell."""
+	return bool((references.get(url) or {}).get("accessible"))
+
+
+def title_of(references: dict, url: str) -> str:
+	"""Most apps put `name` into the rich object; Collectives puts the title of the page into `page`."""
+	rich = references[url].get("richObject") or {}
+	return rich.get("name") or (rich.get("page") or {}).get("title") or url
 
 
 def _access_token() -> str:
@@ -130,7 +135,7 @@ def reference(url: str, title: str = "", subline: str = "", thumbnail: str = "")
 	if not is_resolved(references, url):
 		raise frappe.PermissionError("You have no access to this Nextcloud object.")
 	if not title:
-		title = references[url]["richObject"]["name"]
+		title = title_of(references, url)
 	name = frappe.db.get_value(REFERENCE_DOCTYPE, {"url": url})
 	if name:
 		return name
