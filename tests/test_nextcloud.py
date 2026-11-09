@@ -47,6 +47,10 @@ class IsResolvedTest(unittest.TestCase):
 		self.assertFalse(is_resolved({BASE + "/f/1": {"accessible": False, "richObject": {"name": BASE + "/f/1"}}}, BASE + "/f/1"))
 		self.assertFalse(is_resolved({BASE + "/p": {"accessible": False, "richObject": {"link": BASE + "/p"}}}, BASE + "/p"))
 
+	def test_a_link_nextcloud_cannot_judge_is_not_even_when_accessible(self):
+		bare = {"accessible": True, "richObjectType": "open-graph", "richObject": {"name": BASE + "/c/1"}}
+		self.assertFalse(is_resolved({BASE + "/c/1": bare}, BASE + "/c/1"))
+
 	def test_no_reference_is_not(self):
 		self.assertFalse(is_resolved({BASE + "/f/1": None}, BASE + "/f/1"))
 		self.assertFalse(is_resolved({}, BASE + "/f/1"))

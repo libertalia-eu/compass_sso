@@ -63,8 +63,9 @@ def parse_entries(data: dict) -> dict:
 
 
 def is_resolved(references: dict, url: str) -> bool:
-	"""Nextcloud flags a link the user may not open with `accessible: false`; not every app names its object, so the name cannot tell."""
-	return bool((references.get(url) or {}).get("accessible"))
+	"""Nextcloud flags a link the user may not open with `accessible: false`. A link without a reference provider of its app (Teams, Tags, Contacts) comes back as `open-graph`, `accessible` for everybody: Nextcloud cannot judge it, so it counts as no access."""
+	reference = references.get(url) or {}
+	return bool(reference.get("accessible")) and reference.get("richObjectType") != "open-graph"
 
 
 def title_of(references: dict, url: str) -> str:
