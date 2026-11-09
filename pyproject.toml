@@ -1,7 +1,6 @@
 [project]
 name = "compass_sso"
-version = "0.0.1"
-description = "Spike: end the Keycloak session on Frappe logout and follow Keycloak session end"
+dynamic = ["version", "description"]
 requires-python = ">=3.10"
 dependencies = []
 
