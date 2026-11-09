@@ -12,9 +12,9 @@ from compass_sso import keycloak, store
 
 TIMEOUT_SECONDS = 10
 REFERENCE_DOCTYPE = "Nextcloud Reference"
-# Search providers that return settings or comments, not an object one can link to, and those whose apps have no reference provider
+# Search providers that return settings, the app catalog or comments, not an object one can link to, and those whose apps have no reference provider
 # (Teams, Tags, Contacts): Nextcloud cannot say who may open their objects, so a card would show them to everybody.
-HIDDEN_PROVIDERS = {"settings", "settings_apps", "comments", "circles", "systemtags", "contacts"}
+HIDDEN_PROVIDERS = {"settings", "settings_apps", "appstore", "comments", "circles", "systemtags", "contacts"}
 ACCESS_CACHE_SECONDS = 60
 
 
