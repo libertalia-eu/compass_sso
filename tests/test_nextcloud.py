@@ -1,7 +1,7 @@
 """Unit tests for the pure parts of the Nextcloud references (COMPASS REQ-047). No Frappe site needed: python -m unittest."""
 import unittest
 
-from compass_sso.nextcloud import is_nextcloud_url, is_resolved, parse_entries, visible_providers
+from compass_sso.nextcloud import is_nextcloud_url, is_resolved, parse_entries, title_of, visible_providers
 
 BASE = "https://cloud.libertalia.localhost"
 
@@ -39,15 +39,24 @@ class IsNextcloudUrlTest(unittest.TestCase):
 
 
 class IsResolvedTest(unittest.TestCase):
-	def test_a_named_object_is_resolved(self):
-		self.assertTrue(is_resolved({BASE + "/f/1": {"richObject": {"name": "Readme.md"}}}, BASE + "/f/1"))
+	def test_an_accessible_object_is_resolved_with_or_without_a_name(self):
+		self.assertTrue(is_resolved({BASE + "/f/1": {"accessible": True, "richObject": {"name": "Readme.md"}}}, BASE + "/f/1"))
+		self.assertTrue(is_resolved({BASE + "/p": {"accessible": True, "richObject": {"page": {"title": "Page"}}}}, BASE + "/p"))
 
-	def test_the_bare_object_for_a_forbidden_link_is_not(self):
-		self.assertFalse(is_resolved({BASE + "/f/1": {"richObject": {"name": BASE + "/f/1"}}}, BASE + "/f/1"))
+	def test_an_inaccessible_object_is_not_even_with_a_name(self):
+		self.assertFalse(is_resolved({BASE + "/f/1": {"accessible": False, "richObject": {"name": BASE + "/f/1"}}}, BASE + "/f/1"))
+		self.assertFalse(is_resolved({BASE + "/p": {"accessible": False, "richObject": {"link": BASE + "/p"}}}, BASE + "/p"))
 
 	def test_no_reference_is_not(self):
 		self.assertFalse(is_resolved({BASE + "/f/1": None}, BASE + "/f/1"))
 		self.assertFalse(is_resolved({}, BASE + "/f/1"))
+
+
+class TitleOfTest(unittest.TestCase):
+	def test_name_then_page_title_then_the_link(self):
+		self.assertEqual(title_of({"u": {"richObject": {"name": "Readme.md"}}}, "u"), "Readme.md")
+		self.assertEqual(title_of({"u": {"richObject": {"page": {"title": "Page"}}}}, "u"), "Page")
+		self.assertEqual(title_of({"u": {"richObject": {}}}, "u"), "u")
 
 
 class AccessTokenTest(unittest.TestCase):
