@@ -29,3 +29,24 @@ def has_desk_access() -> bool:
 def desk_entry() -> list[dict]:
 	"""Desk itself as an entry of the apps menus, so CRM and Helpdesk need no fixed one that every user would see (Frappe 16 skips its own entry in `get_apps`)."""
 	return [{"name": "desk", "logo": "/assets/frappe/images/framework.png", "title": "Desk", "route": "/desk", "has_permission": "compass_sso.apps_screen.has_desk_access"}]
+
+
+OVERVIEW_PATH = "/start"
+
+
+def landing_path(location: str) -> str:
+	"""The address a user opens after signing in. Frappe 16 sends a user with several apps to `/apps`, which it redirects to Desk (a 403 for a user who may not open Desk); the overview `/start` takes its place."""
+	from urllib.parse import urlsplit, urlunsplit
+
+	parts = urlsplit(location)
+	if parts.path.rstrip("/") != "/apps":
+		return location
+	return urlunsplit(parts._replace(path=OVERVIEW_PATH))
+
+
+def window_name(app: dict) -> str:
+	"""The name of the browser window an app opens in, the same as in the apps menus: a second click reuses the window. The entries of this app (Desk, Nextcloud) share the app name, so they are told apart by their title."""
+	import re
+
+	key = app["title"] if app["name"] == "compass_sso" else app["name"]
+	return "compass-" + re.sub(r"[^a-z0-9]+", "-", key.lower()).strip("-")

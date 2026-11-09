@@ -9,9 +9,9 @@ def goes_to_keycloak(method: str, path: str, user: str, app_routes) -> bool:
 
 
 def app_routes_of(apps_screen: list, home_page: str | None) -> set:
-	"""The routes of the apps on this site, without the slash: the entries of `add_to_apps_screen`, the app switcher `apps` and the home page."""
+	"""The routes of the apps on this site, without the slash: the entries of `add_to_apps_screen`, the overview `start`, the old app switcher `apps` and the home page."""
 	routes = {entry["route"].strip("/") for entry in apps_screen if entry.get("route")}
-	return {route for route in routes | {"apps", home_page or ""} if route}
+	return {route for route in routes | {"apps", "start", home_page or ""} if route}
 
 
 def redirect_guest_to_keycloak():

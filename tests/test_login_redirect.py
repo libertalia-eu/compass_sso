@@ -26,8 +26,8 @@ class GoesToKeycloakTest(unittest.TestCase):
 
 	def test_routes_come_from_the_apps_screen_hooks(self):
 		screen = [{"route": "/crm"}, {"route": "/helpdesk"}, {"name": "no-route"}]
-		self.assertEqual(app_routes_of(screen, None), {"crm", "helpdesk", "apps"})
-		self.assertEqual(app_routes_of([], "raven"), {"raven", "apps"})
+		self.assertEqual(app_routes_of(screen, None), {"crm", "helpdesk", "apps", "start"})
+		self.assertEqual(app_routes_of([], "raven"), {"raven", "apps", "start"})
 
 
 if __name__ == "__main__":

@@ -6,6 +6,7 @@ import jwt
 from frappe.utils.oauth import get_oauth2_providers, login_oauth_user
 
 from compass_sso import keycloak, roles, store
+from compass_sso.apps_screen import landing_path
 
 
 @frappe.whitelist(allow_guest=True)
@@ -15,6 +16,8 @@ def keycloak_login(code: str, state: str):
 	# shortcut: unsigned decode, the token comes straight from the token endpoint over TLS (OIDC Core 3.1.3.7)
 	claims = jwt.decode(tokens["id_token"], options={"verify_signature": False})
 	login_oauth_user(claims, provider=keycloak.PROVIDER, state=state)
+	if frappe.local.response.get("location"):
+		frappe.local.response["location"] = landing_path(frappe.local.response["location"])
 	if frappe.session.user != "Guest":
 		roles.sync_roles(frappe.session.user, claims)
 		store.remember(frappe.session.sid, claims["sid"], tokens["refresh_token"], time.time())
