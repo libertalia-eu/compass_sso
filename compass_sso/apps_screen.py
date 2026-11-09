@@ -17,3 +17,15 @@ def nextcloud_entry(url: str | None) -> list[dict]:
 		return []
 	# The name differs from the app name `compass_sso` only in the menu title; the logo is the app icon of Nextcloud (a tile in the colour of its theme), because its white logo would vanish on the white page.
 	return [{"name": "nextcloud", "logo": f"{url}/apps/theming/icon", "title": "Nextcloud", "route": url, "has_permission": "compass_sso.apps_screen.has_nextcloud_access"}]
+
+
+def has_desk_access() -> bool:
+	"""Hook `has_permission` of the Desk entry: only a System User, who may open Desk, sees it (COMPASS REQ-045)."""
+	import frappe
+
+	return frappe.permissions.is_system_user()
+
+
+def desk_entry() -> list[dict]:
+	"""Desk itself as an entry of the apps menus, so CRM and Helpdesk need no fixed one that every user would see (Frappe 16 skips its own entry in `get_apps`)."""
+	return [{"name": "desk", "logo": "/assets/frappe/images/framework.png", "title": "Desk", "route": "/desk", "has_permission": "compass_sso.apps_screen.has_desk_access"}]

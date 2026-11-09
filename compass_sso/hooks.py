@@ -6,7 +6,7 @@ app_license = "MIT"
 
 import os
 
-from compass_sso.apps_screen import nextcloud_entry
+from compass_sso.apps_screen import desk_entry, nextcloud_entry
 
 # Documented hooks only: the one logout endpoint all UIs call, and two checks per request.
 override_whitelisted_methods = {"logout": "compass_sso.api.logout"}
@@ -15,8 +15,8 @@ before_request = [
 	"compass_sso.session.check_keycloak_session",
 ]
 
-# Nextcloud is no Frappe app, so it enters the app overview and the apps menus of Helpdesk and CRM through this app.
-add_to_apps_screen = nextcloud_entry(os.environ.get("COMPASS_NEXTCLOUD_URL"))
+# Desk and Nextcloud enter the apps menus of Helpdesk and CRM through this app: Frappe 16 skips its own entry, and Nextcloud is no Frappe app.
+add_to_apps_screen = desk_entry() + nextcloud_entry(os.environ.get("COMPASS_NEXTCLOUD_URL"))
 
 # The app overview opens the apps in a new window (REQ-039).
 web_include_js = "/assets/compass_sso/js/apps_screen.js"
