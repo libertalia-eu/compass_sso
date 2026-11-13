@@ -1,5 +1,6 @@
 [project]
 name = "compass_sso"
+license = {text = "AGPL-3.0-or-later"}
 dynamic = ["version", "description"]
 requires-python = ">=3.10"
 dependencies = []
