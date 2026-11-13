@@ -20,7 +20,7 @@ Frappe's built-in Social Login handles the sign-in. This app adds what it lacks 
 ## Install
 
 ```bash
-bench get-app https://github.com/libertalia-eu/compass_sso --branch v0.9.1
+bench get-app https://github.com/libertalia-eu/compass_sso --branch v0.10.0
 bench --site <site> install-app compass_sso
 ```
 
