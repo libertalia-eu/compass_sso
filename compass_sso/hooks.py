@@ -2,7 +2,7 @@ app_name = "compass_sso"
 app_title = "Compass SSO"
 app_publisher = "COMPASS"
 app_description = "Keycloak logout and session follow-up"
-app_license = "MIT"
+app_license = "AGPL-3.0-or-later"
 
 import os
 

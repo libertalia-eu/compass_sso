@@ -12,4 +12,4 @@ Frappe app for COMPASS: signing out of a Frappe app ends the Keycloak session, a
 Needs a Social Login Key named `keycloak` (see COMPASS `dev/frappe/setup-sites.sh`) and the Keycloak client with `backchannel.logout.url` = `https://<site>/api/method/compass_sso.api.backchannel_logout` and `backchannel.logout.session.required`.
 Relies on `frappe.utils.oauth.login_oauth_user` and `get_redirect_uri` (not publicly documented): re-test after Frappe updates.
 
-Tests: `./run-tests.sh` (or `IMAGE=<frappe image> ./run-tests.sh`). Licence: MIT.
+Tests: `./run-tests.sh` (or `IMAGE=<frappe image> ./run-tests.sh`). Licence: AGPL-3.0-or-later (see `LICENSE`).
