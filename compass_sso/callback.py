@@ -5,7 +5,7 @@ import frappe
 import jwt
 from frappe.utils.oauth import get_oauth2_providers, login_oauth_user
 
-from compass_sso import keycloak, roles, store
+from compass_sso import keycloak, language, roles, store
 
 
 @frappe.whitelist(allow_guest=True)
@@ -17,4 +17,5 @@ def keycloak_login(code: str, state: str):
 	login_oauth_user(claims, provider=keycloak.PROVIDER, state=state)
 	if frappe.session.user != "Guest":
 		roles.sync_roles(frappe.session.user, claims)
+		language.sync_language(frappe.session.user, claims)
 		store.remember(frappe.session.sid, claims["sid"], tokens["refresh_token"], time.time())
