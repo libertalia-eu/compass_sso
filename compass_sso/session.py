@@ -4,6 +4,7 @@ import frappe
 import requests
 
 from compass_sso import keycloak, store
+from compass_sso.login_redirect import redirect_guest_to_keycloak
 
 CHECK_INTERVAL_SECONDS = 30
 
@@ -19,6 +20,8 @@ def _end_session():
 	store.forget(frappe.session.sid)
 	frappe.local.login_manager.logout()
 	frappe.db.commit()
+	# A page goes to the sign-in like a guest; an API call keeps the 401 (the user is Guest only from the next request on, so pass it).
+	redirect_guest_to_keycloak("Guest")
 	raise frappe.SessionExpired
 
 
