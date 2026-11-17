@@ -19,7 +19,7 @@ def app_routes_of(apps_screen: list, home_page: str | None) -> set:
 	return {route for route in routes | {"apps", "start", home_page or ""} if route}
 
 
-def redirect_guest_to_keycloak():
+def redirect_guest_to_keycloak(user: str | None = None):
 	"""before_request: send the guest straight to Keycloak; the page asked for survives as the OAuth state."""
 	import frappe
 	from frappe.utils.oauth import get_oauth2_authorize_url
@@ -31,7 +31,7 @@ def redirect_guest_to_keycloak():
 
 	request = frappe.local.request
 	app_routes = app_routes_of(frappe.get_hooks("add_to_apps_screen"), frappe.db.get_single_value("Website Settings", "home_page"))
-	if not goes_to_keycloak(request.method, request.path, frappe.session.user, app_routes):
+	if not goes_to_keycloak(request.method, request.path, user or frappe.session.user, app_routes):
 		return
 	if not frappe.db.exists("Social Login Key", {"name": keycloak.PROVIDER, "enable_social_login": 1}):
 		return
