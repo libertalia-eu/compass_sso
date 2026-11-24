@@ -1,0 +1,14 @@
+[
+	{
+		"doctype": "Role",
+		"name": "Nextcloud Nutzer",
+		"role_name": "Nextcloud Nutzer",
+		"desk_access": 0
+	},
+	{
+		"doctype": "Role",
+		"name": "Company Admin",
+		"role_name": "Company Admin",
+		"desk_access": 1
+	}
+]

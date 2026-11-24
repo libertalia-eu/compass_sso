@@ -1,0 +1,101 @@
+[
+	{
+		"doctype": "Role Profile",
+		"name": "CRM Nutzer",
+		"role_profile": "CRM Nutzer",
+		"roles": [
+			{
+				"role": "Sales User"
+			}
+		]
+	},
+	{
+		"doctype": "Role Profile",
+		"name": "CRM Admin",
+		"role_profile": "CRM Admin",
+		"roles": [
+			{
+				"role": "Sales User"
+			},
+			{
+				"role": "Sales Manager"
+			}
+		]
+	},
+	{
+		"doctype": "Role Profile",
+		"name": "Helpdesk Nutzer",
+		"role_profile": "Helpdesk Nutzer",
+		"roles": [
+			{
+				"role": "Agent"
+			}
+		]
+	},
+	{
+		"doctype": "Role Profile",
+		"name": "Helpdesk Admin",
+		"role_profile": "Helpdesk Admin",
+		"roles": [
+			{
+				"role": "Agent"
+			},
+			{
+				"role": "Agent Manager"
+			}
+		]
+	},
+	{
+		"doctype": "Role Profile",
+		"name": "Raven Nutzer",
+		"role_profile": "Raven Nutzer",
+		"roles": [
+			{
+				"role": "Raven User"
+			}
+		]
+	},
+	{
+		"doctype": "Role Profile",
+		"name": "Raven Admin",
+		"role_profile": "Raven Admin",
+		"roles": [
+			{
+				"role": "Raven User"
+			},
+			{
+				"role": "Raven Admin"
+			}
+		]
+	},
+	{
+		"doctype": "Role Profile",
+		"name": "Nextcloud Nutzer",
+		"role_profile": "Nextcloud Nutzer",
+		"roles": [
+			{
+				"role": "Nextcloud Nutzer"
+			}
+		]
+	},
+	{
+		"doctype": "Role Profile",
+		"name": "Nextcloud Admin",
+		"role_profile": "Nextcloud Admin",
+		"roles": [
+			{
+				"role": "Nextcloud Nutzer"
+			}
+		]
+	},
+	{
+		"doctype": "Role Profile",
+		"name": "Company Admin",
+		"role_profile": "Company Admin",
+		"roles": [
+			{
+				"role": "Company Admin"
+			}
+		]
+	}
+]

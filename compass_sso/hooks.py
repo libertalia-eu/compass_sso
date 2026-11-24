@@ -22,3 +22,7 @@ add_to_apps_screen = desk_entry() + nextcloud_entry(os.environ.get("COMPASS_NEXT
 # A Nextcloud Reference is readable only for a user whom Nextcloud itself lets open the object (REQ-047).
 has_permission = {"Nextcloud Reference": "compass_sso.nextcloud.reference_has_permission"}
 raven_document_link_override = "compass_sso.nextcloud.document_link"
+
+# The Keycloak group names a Role Profile; the profiles and the two roles only COMPASS knows come with the app (REQ-102).
+on_social_login = ["compass_sso.profiles.on_social_login"]
+fixtures = [{"dt": "Role", "filters": [["name", "in", ["Nextcloud Nutzer", "Company Admin"]]]}, "Role Profile"]

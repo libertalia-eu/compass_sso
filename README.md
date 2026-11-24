@@ -20,7 +20,7 @@ Frappe's built-in Social Login handles the sign-in. This app adds what it lacks 
 ## Install
 
 ```bash
-bench get-app https://github.com/libertalia-eu/compass_sso --branch v0.11.1
+bench get-app https://github.com/libertalia-eu/compass_sso --branch v0.12.0
 bench --site <site> install-app compass_sso
 ```
 
@@ -68,23 +68,21 @@ The realm URL is derived from Base URL plus the part of Authorize URL before `/p
 | `session.check_keycloak_session` | `before_request` hook. At most every 30 seconds per session it uses the refresh token. If Keycloak refuses it, or cannot be reached, the Frappe session ends. |
 | `api.backchannel_logout` | POST endpoint for OIDC Back-Channel Logout 1.0. `logout_token.py` checks signature (RS256 via the realm's JWKS), issuer, audience, event, `sid`, that there is no `nonce`, and that each `jti` is used once. |
 | `login_redirect` | A guest who opens `/login`, the site root, the app overview or the route of an app on the site is sent to Keycloak. The requested page is kept as the OAuth state. |
-| `roles.sync_roles` | Maps Keycloak client roles to Frappe roles on every sign-in and removes a Frappe role when the Keycloak role is gone. Roles outside the table stay. The table never names `System Manager` or `Script Manager`. |
+| `profiles.on_social_login` | Hook `on_social_login` (Frappe 16.60.2 or later). Sets the role profiles of the user to the Keycloak groups of the sign-in, by name. A group that is gone takes its profile away. |
 | `apps_screen`, `www/start` | A Desk entry (only for system users), a Nextcloud entry (only with the role `Nextcloud Nutzer`) and the overview page `/start`. |
 | `nextcloud` | Searches Nextcloud with the user's own Keycloak access token and stores the picked object as a `Nextcloud Reference` for Raven. Providers that return settings or objects without a permission check are hidden. |
 
-#### Role mapping
+#### Role profiles
 
-The table `ROLES` in `compass_sso/roles.py` is the only mapping. The Keycloak role names are German, as in COMPASS.
+The group name is the name of a Role Profile. The profiles ship as fixtures (`compass_sso/fixtures/`) and load on `migrate`. The Keycloak client needs a group mapper `groups` that writes into the ID token and the userinfo. No profile gives `System Manager` or `Script Manager`.
 
-| Keycloak client | Keycloak role | Frappe role |
-|---|---|---|
-| `crm` | `CRM Nutzer` / `CRM Admin` | `Sales User` / `Sales Manager` |
-| `helpdesk` | `Helpdesk Nutzer` / `Helpdesk Admin` | `Agent` / `Agent Manager` |
-| `raven` | `Raven Nutzer` / `Raven Admin` | `Raven User` / `Raven Admin` |
-| `nextcloud` | `Nextcloud Nutzer` | `Nextcloud Nutzer` |
-| `compass-admin` | `Company Admin` | `Company Admin` (the only role the table creates with Desk access) |
-
-To use other roles, edit the table.
+| Group and profile | Frappe roles |
+|---|---|
+| `CRM Nutzer` / `CRM Admin` | `Sales User` / `Sales User`, `Sales Manager` |
+| `Helpdesk Nutzer` / `Helpdesk Admin` | `Agent` / `Agent`, `Agent Manager` |
+| `Raven Nutzer` / `Raven Admin` | `Raven User` / `Raven User`, `Raven Admin` |
+| `Nextcloud Nutzer` / `Nextcloud Admin` | `Nextcloud Nutzer` |
+| `Company Admin` | `Company Admin` (opens Desk) |
 
 ## Limits
 
